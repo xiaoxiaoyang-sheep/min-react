@@ -7,7 +7,7 @@ import {
 } from "../src/Scheduler";
 
 describe("任务", () => {
-	test("2个相同优先级的任务", () => {
+	it("2个相同优先级的任务", () => {
 		let eventTasks: any[] = [];
 
 		schedukerCallback(NormalPriority, () => {
@@ -23,7 +23,7 @@ describe("任务", () => {
 		});
 	});
 
-	test("3个不同优先级的任务", () => {
+	it("3个不同优先级的任务", () => {
 		let eventTasks: any[] = [];
 
 		schedukerCallback(NormalPriority, () => {
@@ -42,7 +42,7 @@ describe("任务", () => {
 		});
 	});
 
-	test("4个不同优先级的任务", () => {
+	it("4个不同优先级的任务", () => {
 		let eventTasks: any[] = [];
 
 		schedukerCallback(NormalPriority, () => {
