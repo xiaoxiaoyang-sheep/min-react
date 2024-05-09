@@ -1,10 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import { ReactDOM } from "../which-react";
+import "./index.css";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+const jsx = (
+    <div className="box border">
+        <h1 className="border">omg</h1>
+    </div>
+);
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(jsx);
