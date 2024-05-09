@@ -66,3 +66,34 @@ export function createFiberFromTypeAndProps(
 	fiber.type = type;
 	return fiber;
 }
+
+
+// This is used to create an alternate fiber to do work on.
+// * 入口位置包括 1. prepareFreshStack 2. 复用节点 useFiber
+export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
+    let workInProgress = current.alternate;
+
+    if(workInProgress === null) {
+        workInProgress = createFiber(current.tag, pendingProps, current.key);
+        workInProgress.elementType = current.elementType;
+        workInProgress.type = current.type;
+        workInProgress.stateNode = current.stateNode;
+
+        workInProgress.alternate = current;
+        current.alternate = workInProgress;
+    } else {
+        workInProgress.pendingProps = current.pendingProps;
+        workInProgress.type = current.type;
+        workInProgress.flags = NoFlags;
+    }
+
+    workInProgress.flags = current.flags;
+
+    workInProgress.child = current.child;
+    workInProgress.sibling =current.sibling;
+    workInProgress.memoizedProps = current.memoizedProps;
+    workInProgress.memoizedState = current.memoizedState;
+    workInProgress.index = current.index;
+
+    return workInProgress;
+}
