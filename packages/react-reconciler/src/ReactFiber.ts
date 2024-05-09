@@ -36,7 +36,7 @@ function FiberNode(this: any, tag: WorkTag, pendingProps: any, key: string | nul
 }
 
 // 根据 ReactElement 创建fiber
-export function createFiberFromELement(element: ReactElement): Fiber {
+export function createFiberFromElement(element: ReactElement): Fiber {
 	const { key, type } = element;
 	const pendingProps = element.props;
 	const fiber = createFiberFromTypeAndProps(type, key, pendingProps);
@@ -61,7 +61,8 @@ export function createFiberFromTypeAndProps(
 		fiberTag = ClassComponent;
 	}
 
-	const fiber = createFiber(fiberTag, key, pendingProps);
+
+	const fiber = createFiber(fiberTag, pendingProps, key);
 	fiber.elementType = type;
 	fiber.type = type;
 	return fiber;

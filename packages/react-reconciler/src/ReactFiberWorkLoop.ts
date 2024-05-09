@@ -30,8 +30,11 @@ export function scheduleUpdateOnFiber(root: FiberRoot, fiber: Fiber) {
 
 // 这是每个并发任务的入口点，即通过Scheduler的所有内容。
 export function performConcurrentWorkOnRoot(root: FiberRoot) {
-    // ! 1. render, 构建fiber树VDOM
+
+    // ! 1. render, 构建fiber树VDOM(beginWork, completeWork)
     renderRootSync(root);
+
+    console.log('%c [ render ]-37', 'font-size:13px; background:pink; color:#bf2c9f;', root)
 
     // ! 2. commit, VDOM -> DOM
     // commitRoot(root);
@@ -60,8 +63,11 @@ function prepareFreshStack(root: FiberRoot): Fiber {
     root.finishedWork = null;
 
     workInProgressRoot = root; // FiberRoot
+    
     const rootWorkInProgress = createWorkInProgress(root.current, null);
-    workInProgress = rootWorkInProgress; // Fiber
+    if(workInProgress === null) {
+        workInProgress = rootWorkInProgress; // Fiber
+    }
 
     return rootWorkInProgress;
 }
@@ -80,6 +86,7 @@ function performUnitOfWork(unitOfWork: Fiber): void {
 
     // ! 1. beginWork
     let next = beginWork(current, unitOfWork);
+
     // * 1.1 执行自己
     // * 1.2 （协调，bailout）返回子节点
 
