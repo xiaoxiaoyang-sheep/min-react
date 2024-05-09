@@ -1,21 +1,21 @@
 import { ReactElement } from "shared/ReactElementType";
-import { Flags, NoFlags } from "./ReactFiberFlags";
+import { NoFlags } from "./ReactFiberFlags";
 import { Fiber } from "./ReactInternalTypes";
 import { ClassComponent, FunctionComponent, HostComponent, IndeterminateComponent, WorkTag } from "./ReactWorkTags";
 import { isFn, isStr } from "shared/utils";
 
 
 
-// 创建一个fiber
+// 创建一个fiber 
 export function createFiber(
 	tag: WorkTag,
 	pendingProps: any,
 	key: string | null
 ): Fiber {
-	return new FiberNode(tag, pendingProps, key);
+	return new (FiberNode as any)(tag, pendingProps, key);
 }
 
-function FiberNode(tag: WorkTag, pendingProps: any, key: string | null) {
+function FiberNode(this: any, tag: WorkTag, pendingProps: any, key: string | null) {
 	// 赋值
 	this.tag = tag;
 	this.key = key;
