@@ -22,4 +22,8 @@ export function isStr(sth: any): boolean {
     return typeof sth === 'string'
 }
 
+export function isText(sth: any): boolean {
+    return (typeof sth === "string" && sth !== "") || typeof sth === "number"
+}
+
 

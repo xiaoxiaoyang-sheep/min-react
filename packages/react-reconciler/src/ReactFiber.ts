@@ -1,7 +1,7 @@
 import type { ReactElement } from "shared/ReactElementType";
 import { NoFlags } from "./ReactFiberFlags";
 import type { Fiber } from "./ReactInternalTypes";
-import { ClassComponent, FunctionComponent, HostComponent, IndeterminateComponent, WorkTag } from "./ReactWorkTags";
+import { ClassComponent, FunctionComponent, HostComponent, HostText, IndeterminateComponent, WorkTag } from "./ReactWorkTags";
 import { isFn, isStr } from "shared/utils";
 
 
@@ -97,4 +97,9 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     workInProgress.index = current.index;
 
     return workInProgress;
+}
+
+export function createFiberFromText(content: string): Fiber {
+    const fiber = createFiber(HostText, content, null);
+    return fiber;
 }

@@ -32,17 +32,12 @@ export function performConcurrentWorkOnRoot(root: FiberRoot) {
 	// ! 1. render, 构建fiber树VDOM(beginWork, completeWork)
 	renderRootSync(root);
 
-	console.log(
-		"%c [ render ]-37",
-		"font-size:13px; background:pink; color:#bf2c9f;",
-		root
-	);
-
-
+	
 	// ! 2. commit, VDOM -> DOM
     const finishedWork = root.current.alternate;
 	root.finishedWork = finishedWork;
 	commitRoot(root);
+
 }
 
 function renderRootSync(root: FiberRoot) {

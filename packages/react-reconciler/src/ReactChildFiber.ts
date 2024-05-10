@@ -1,9 +1,9 @@
 import type { ReactElement } from "shared/ReactElementType";
 import type { Fiber } from "./ReactInternalTypes";
-import { createFiberFromElement } from "./ReactFiber";
+import { createFiberFromElement, createFiberFromText } from "./ReactFiber";
 import { Placement } from "./ReactFiberFlags";
 import { REACT_ELEMENT_TYPE } from "shared/ReactSymbols";
-import { isArray } from "shared/utils";
+import { isArray, isText } from "shared/utils";
 
 type ChildReconciler = (
 	returnFiber: Fiber,
@@ -25,6 +25,17 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 		return newFiber;
 	}
 
+    // 文本
+    function reconcileSingleTextNode(
+        returnFiber: Fiber,
+		currentFirstChild: Fiber | null, // todo 更新
+		textContent: string
+    ) {
+        const created = createFiberFromText(textContent);
+        created.return = returnFiber;
+        return created;
+    }
+
 	// 协调单个节点，对于页面初次渲染，创建fiber，不涉及对比复用老节点
 	function reconcileSingleElement(
 		returnFiber: Fiber,
@@ -37,6 +48,12 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 	}
 
 	function createChild(returnFiber: Fiber, newChild: any): Fiber | null {
+        if(isText(newChild)) {
+            const created = createFiberFromText(newChild + "");
+            created.return = returnFiber;
+            return created;
+        }
+
 		if (typeof newChild === "object" && newChild !== null) {
 			switch (newChild.$$typeof) {
 				case REACT_ELEMENT_TYPE: {
@@ -89,6 +106,13 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 		currentFirstChild: Fiber | null,
 		newChild: any
 	): Fiber | null {
+
+        if(isText(newChild)) {
+            return placeSingleChild(
+                reconcileSingleTextNode(returnFiber, currentFirstChild, newChild + "")
+            );
+        }
+
 		// 检查newChild类型，单个节点、文本、数组
 		if (typeof newChild === "object" && newChild !== null) {
 			switch (newChild.$$typeof) {
@@ -108,7 +132,7 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
         if(isArray(newChild)) {
             return reconcileChildrenArray(returnFiber, currentFirstChild, newChild);
         }
-        
+
 		// todo
 
 		return null;

@@ -4,13 +4,16 @@ import "./index.css";
 const jsx = (
     <div className="box border">
         <h1 className="border">omg</h1>
+        123123
         <h1>react</h1>
+        omg
     </div>
 );
 
 
 // @ts-ignore
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(jsx);
+// ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render("omg");
 
 
 // div.root 对应的是根fiber， Fiber， tag = HostRoot = 3
