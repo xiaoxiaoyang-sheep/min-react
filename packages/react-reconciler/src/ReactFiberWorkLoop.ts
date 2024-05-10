@@ -38,10 +38,11 @@ export function performConcurrentWorkOnRoot(root: FiberRoot) {
 		root
 	);
 
-	const finishedWork = root.current.alternate;
-	root.finishedWork = finishedWork;
+
 	// ! 2. commit, VDOM -> DOM
-	// commitRoot(root);
+    const finishedWork = root.current.alternate;
+	root.finishedWork = finishedWork;
+	commitRoot(root);
 }
 
 function renderRootSync(root: FiberRoot) {
@@ -66,7 +67,7 @@ function commitRoot(root: FiberRoot) {
 	executionContext |= CommitContext;
 
 	// ! 2. mutation阶段，渲染dom树
-    commitMutationEffects(root, root.finishedWork);
+    commitMutationEffects(root, root.finishedWork as Fiber);
 
 	// ! 3. commit结束
 	executionContext = prevExecutionContext;
@@ -80,9 +81,8 @@ function prepareFreshStack(root: FiberRoot): Fiber {
 	workInProgressRoot = root; // FiberRoot
 
 	const rootWorkInProgress = createWorkInProgress(root.current, null);
-	if (workInProgress === null) {
-		workInProgress = rootWorkInProgress; // Fiber
-	}
+
+    workInProgress = rootWorkInProgress; // Fiber
 
 	return rootWorkInProgress;
 }

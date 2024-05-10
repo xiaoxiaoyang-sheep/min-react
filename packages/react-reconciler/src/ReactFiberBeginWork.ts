@@ -33,7 +33,6 @@ function updateHostRoot(current: null | Fiber, workInProgress: Fiber) {
 // 初次渲染 协调
 // todo 更新 协调、bailout
 function updateHostComponent(current: null | Fiber, workInProgress: Fiber) {
-
 	// 如果原生标签只有一个文本，这个时候文本不会再生成fiber节点，而是当作这个原生标签的属性
     const { type, pendingProps } = workInProgress;
     const isDirectTextChild = shouldSetTextContent(type, pendingProps);
@@ -41,7 +40,6 @@ function updateHostComponent(current: null | Fiber, workInProgress: Fiber) {
         // 文本属性
         return null;
     }
-
 	const nextChildren = workInProgress.pendingProps.children;
 	reconcileChildren(current, workInProgress, nextChildren);
 
