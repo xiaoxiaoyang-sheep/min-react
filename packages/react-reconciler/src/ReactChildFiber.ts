@@ -1,8 +1,9 @@
-import { ReactElement } from "shared/ReactElementType";
-import { Fiber } from "./ReactInternalTypes";
+import type { ReactElement } from "shared/ReactElementType";
+import type { Fiber } from "./ReactInternalTypes";
 import { createFiberFromElement } from "./ReactFiber";
 import { Placement } from "./ReactFiberFlags";
 import { REACT_ELEMENT_TYPE } from "shared/ReactSymbols";
+import { isArray } from "shared/utils";
 
 type ChildReconciler = (
 	returnFiber: Fiber,
@@ -35,6 +36,54 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 		return createdFiber;
 	}
 
+	function createChild(returnFiber: Fiber, newChild: any): Fiber | null {
+		if (typeof newChild === "object" && newChild !== null) {
+			switch (newChild.$$typeof) {
+				case REACT_ELEMENT_TYPE: {
+					const created = createFiberFromElement(newChild);
+					created.return = returnFiber;
+					return created;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	function reconcileChildrenArray(
+		returnFiber: Fiber,
+		currentFirstChild: Fiber | null,
+		newChildren: Array<any>
+	): Fiber | null {
+		let resultFirstChild: Fiber | null = null; // 头节点
+		let previousNewFiber: Fiber | null = null;
+		let oldFiber = currentFirstChild;
+		let newIdx = 0;
+
+		if (oldFiber === null) {
+			for (; newIdx < newChildren.length; newIdx++) {
+				const newFiber = createChild(returnFiber, newChildren[newIdx]);
+				if (newFiber === null) {
+					// 无效节点跳过
+					continue;
+				}
+				newFiber.index = newIdx; // 组件在更新阶段，判断在更新前后的位置是否一致，如果不一致，需要移动
+
+				if (previousNewFiber === null) {
+                    // 第一个节点，不要用newIdx判断，因为有可能有null，而null不是有效fiber
+					resultFirstChild = newFiber;
+				} else {
+					previousNewFiber.sibling = newFiber;
+				}
+
+				previousNewFiber = newFiber;
+			}
+			return resultFirstChild;
+		}
+
+		return resultFirstChild;
+	}
+
 	function reconcileChildFibers(
 		returnFiber: Fiber,
 		currentFirstChild: Fiber | null,
@@ -54,6 +103,12 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 				}
 			}
 		}
+
+        // 子节点是数组
+        if(isArray(newChild)) {
+            return reconcileChildrenArray(returnFiber, currentFirstChild, newChild);
+        }
+        
 		// todo
 
 		return null;

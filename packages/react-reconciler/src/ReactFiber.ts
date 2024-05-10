@@ -1,6 +1,6 @@
-import { ReactElement } from "shared/ReactElementType";
+import type { ReactElement } from "shared/ReactElementType";
 import { NoFlags } from "./ReactFiberFlags";
-import { Fiber } from "./ReactInternalTypes";
+import type { Fiber } from "./ReactInternalTypes";
 import { ClassComponent, FunctionComponent, HostComponent, IndeterminateComponent, WorkTag } from "./ReactWorkTags";
 import { isFn, isStr } from "shared/utils";
 

@@ -1,5 +1,5 @@
 import { isNum, isStr } from "shared/utils";
-import { Fiber } from "./ReactInternalTypes";
+import type { Fiber } from "./ReactInternalTypes";
 import { HostComponent, HostRoot } from "./ReactWorkTags";
 
 function completeWork(
@@ -48,9 +48,10 @@ function finalizeInitialChildren(domElement: Element, props: any) {
 }
 
 function appendAllChildren(parent: Element, workInProgress: Fiber) {
-    const nodeFiber = workInProgress.child;
-    if(nodeFiber) {
+    let nodeFiber = workInProgress.child; // 链表结构
+    while(nodeFiber !== null) { 
         parent.appendChild(nodeFiber.stateNode);
+        nodeFiber = nodeFiber.sibling;
     }
 }
 

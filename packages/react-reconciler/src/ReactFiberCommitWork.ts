@@ -1,5 +1,5 @@
 import { Placement } from "./ReactFiberFlags";
-import { Fiber, FiberRoot } from "./ReactInternalTypes";
+import type { Fiber, FiberRoot } from "./ReactInternalTypes";
 import { HostComponent, HostRoot } from "./ReactWorkTags";
 
 export function commitMutationEffects(root: FiberRoot, finishedWork: Fiber) {

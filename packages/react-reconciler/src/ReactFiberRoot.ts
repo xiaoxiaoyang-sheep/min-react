@@ -1,5 +1,5 @@
 import { createFiber } from "./ReactFiber";
-import { Container, Fiber, FiberRoot } from "./ReactInternalTypes";
+import type { Container, Fiber, FiberRoot } from "./ReactInternalTypes";
 import { HostRoot } from "./ReactWorkTags";
 
 

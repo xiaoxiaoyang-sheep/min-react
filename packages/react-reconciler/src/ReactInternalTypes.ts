@@ -1,4 +1,4 @@
-import { Flags } from "./ReactFiberFlags";
+import type { Flags } from "./ReactFiberFlags";
 import { WorkTag } from "./ReactWorkTags";
 
 export type Container = Element | Document | DocumentFragment;
