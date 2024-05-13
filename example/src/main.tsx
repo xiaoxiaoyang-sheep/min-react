@@ -1,20 +1,38 @@
 import { ReactDOM } from "../which-react";
 import "./index.css";
 
-const jsx = (
-    <div className="box border">
-        <h1 className="border">omg</h1>
-        123123
-        <h1>react</h1>
-        omg
-    </div>
+let fragment1 = (
+	<>
+		<>
+			<h3>1</h3>
+		</>
+		<h4>2</h4>
+		<>o</>
+	</>
 );
 
+// fragment1 = (
+// 	<Fragment key="sh">
+// 		<h3>1</h3>
+// 		<h4>2</h4>
+// 	</Fragment>
+// )
+
+const jsx = (
+	<div className="box border">
+		{fragment1}
+		<h1 className="border">omg</h1>
+		123123
+		<h1>react</h1>
+		omg
+	</div>
+);
 
 // @ts-ignore
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(jsx);
+// ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(jsx);
 // ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render("omg");
-
+// @ts-ignore
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(jsx);
 
 // div.root 对应的是根fiber， Fiber， tag = HostRoot = 3
 
