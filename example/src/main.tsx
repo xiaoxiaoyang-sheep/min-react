@@ -1,4 +1,4 @@
-import { ReactDOM } from "../which-react";
+import { Component, ReactDOM } from "../which-react";
 import "./index.css";
 
 let fragment1 = (
@@ -18,8 +18,21 @@ let fragment1 = (
 // 	</Fragment>
 // )
 
+// @ts-ignore
+class ClassComponent extends Component {
+	render() {
+		return (
+			<div>
+				<h3>ClassComponet</h3>
+			</div>
+		)
+	}
+}
+
 const jsx = (
 	<div className="box border">
+		{/* @ts-ignore */}
+		<ClassComponent />
 		{fragment1}
 		<h1 className="border">omg</h1>
 		123123

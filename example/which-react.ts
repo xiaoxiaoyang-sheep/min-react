@@ -1,5 +1,5 @@
 // import ReactDOM from 'react-dom/client';
 // export { ReactDOM};
 
-export { Fragment } from "../packages/react/src";
+export { Fragment, Component } from "../packages/react";
 export * as ReactDOM from "../packages/react-dom/client";
