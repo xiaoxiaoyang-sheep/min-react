@@ -31,6 +31,7 @@ export function scheduleUpdateOnFiber(root: FiberRoot, fiber: Fiber) {
 export function performConcurrentWorkOnRoot(root: FiberRoot) {
 	// ! 1. render, 构建fiber树VDOM(beginWork, completeWork)
 	renderRootSync(root);
+	console.log('%c [ root ]-34', 'font-size:13px; background:pink; color:#bf2c9f;', root)
 
 	
 	// ! 2. commit, VDOM -> DOM
@@ -77,7 +78,10 @@ function prepareFreshStack(root: FiberRoot): Fiber {
 
 	const rootWorkInProgress = createWorkInProgress(root.current, null);
 
-    workInProgress = rootWorkInProgress; // Fiber
+	if(workInProgress === null) {
+		workInProgress = rootWorkInProgress; // Fiber
+	}
+    
 
 	return rootWorkInProgress;
 }
@@ -94,6 +98,8 @@ function performUnitOfWork(unitOfWork: Fiber): void {
 
 	// ! 1. beginWork
 	let next = beginWork(current, unitOfWork);
+	// ! 把pendingProps更新到memoizedProps
+	unitOfWork.memoizedProps = unitOfWork.pendingProps;
 
 	// * 1.1 执行自己
 	// * 1.2 （协调，bailout）返回子节点

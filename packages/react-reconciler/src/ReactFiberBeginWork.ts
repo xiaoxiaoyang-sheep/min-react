@@ -1,7 +1,15 @@
 import { isNum, isStr } from "shared/utils";
 import type { Fiber } from "./ReactInternalTypes";
-import { HostComponent, HostRoot, HostText } from "./ReactWorkTags";
-import { reconcileChildFibers, mountChildFibers} from "./ReactChildFiber";
+import {
+	HostComponent,
+	HostRoot,
+	Fragment,
+	HostText,
+	ClassComponent,
+	FunctionComponent,
+} from "./ReactWorkTags";
+import { reconcileChildFibers, mountChildFibers } from "./ReactChildFiber";
+import { renderWithHooks } from "./ReactFiberHooks";
 
 // 1. 处理当前fiber，因为不同组件对应的fiber处理方式不同
 // 2. 返回子节点child
@@ -11,8 +19,14 @@ function beginWork(current: Fiber | null, workInProgress: Fiber): Fiber | null {
 			return updateHostRoot(current, workInProgress);
 		case HostComponent:
 			return updateHostComponent(current, workInProgress);
-        case HostText:
-            return updateHostText(current, workInProgress);
+		case HostText:
+			return updateHostText(current, workInProgress);
+		case Fragment:
+			return updateFragment(current, workInProgress);
+		case ClassComponent:
+			return updateClassComponent(current, workInProgress);
+		case FunctionComponent:
+			return updateFunctionComponent(current, workInProgress);
 		// todo
 	}
 
@@ -28,6 +42,10 @@ function updateHostRoot(current: null | Fiber, workInProgress: Fiber) {
 
 	reconcileChildren(current, workInProgress, nextChildren);
 
+	if(current) {
+		current.child = workInProgress.child;
+	}
+
 	return workInProgress.child;
 }
 
@@ -36,21 +54,44 @@ function updateHostRoot(current: null | Fiber, workInProgress: Fiber) {
 // todo 更新 协调、bailout
 function updateHostComponent(current: null | Fiber, workInProgress: Fiber) {
 	// 如果原生标签只有一个文本，这个时候文本不会再生成fiber节点，而是当作这个原生标签的属性
-    const { type, pendingProps } = workInProgress;
-    const isDirectTextChild = shouldSetTextContent(type, pendingProps);
-    if(isDirectTextChild) {
-        // 文本属性
-        return null;
-    }
+	const { type, pendingProps } = workInProgress;
+	const isDirectTextChild = shouldSetTextContent(type, pendingProps);
+	if (isDirectTextChild) {
+		// 文本属性
+		return null;
+	}
 	const nextChildren = workInProgress.pendingProps.children;
 	reconcileChildren(current, workInProgress, nextChildren);
 
-    return workInProgress.child;
+	return workInProgress.child;
 }
 
 // 文本没有子节点，不需要协调
 function updateHostText(current: null | Fiber, workInProgress: Fiber) {
-    return null;
+	return null;
+}
+
+function updateFragment(current: null | Fiber, workInProgress: Fiber) {
+	const nextChildren = workInProgress.pendingProps.children;
+	reconcileChildren(current, workInProgress, nextChildren);
+	return workInProgress.child;
+}
+
+// 更新自己
+// 协调
+function updateClassComponent(current: null | Fiber, workInProgress: Fiber) {
+	const { type, pendingProps } = workInProgress;
+	const instance = new type(pendingProps);
+	const children = instance.render();
+	reconcileChildren(current, workInProgress, children);
+	return workInProgress.child;
+}
+
+function updateFunctionComponent(current: null | Fiber, workInProgress: Fiber) {
+	const { type, pendingProps } = workInProgress;
+	const children = renderWithHooks(current, workInProgress, type, pendingProps);
+	reconcileChildren(current, workInProgress, children);
+	return workInProgress.child;
 }
 
 // 协调子节点，构建新的fiber树
