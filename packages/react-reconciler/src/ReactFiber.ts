@@ -34,6 +34,7 @@ function FiberNode(this: any, tag: WorkTag, pendingProps: any, key: string | nul
 	this.memoizedState = null;
 	this.flags = NoFlags;
 	this.alternate = null;
+	this.deletions = null;
 }
 
 // 根据 ReactElement 创建fiber

@@ -26,23 +26,34 @@ class ClassComponent extends Component {
 				{/* @ts-ignore */}
 				<h3>{this.props.name}</h3>
 			</div>
-		)
+		);
 	}
 }
 
-function FunctionComponent({name}: {name: string}) {
+function FunctionComponent({ name }: { name: string }) {
 	const [count1, setCount1] = useReducer((x: any) => x + 1, 0);
 	return (
 		<div className="border">
 			{/* <h3>{name}</h3> */}
-			{
-				count1 % 2 === 0 ? 
-				<button onClick={() => {
-					setCount1()
-				}}>{count1}</button> : <span>react</span>
-			}
+			{count1 % 2 === 0 ? (
+				<button
+					onClick={() => {
+						setCount1();
+					}}
+				>
+					{count1}
+				</button>
+			) : (
+				<span
+					onClick={() => {
+						setCount1();
+					}}
+				>
+					react
+				</span>
+			)}
 		</div>
-	)
+	);
 }
 
 const jsx = (
@@ -62,7 +73,9 @@ const jsx = (
 // ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(jsx);
 // ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render("omg");
 // @ts-ignore
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(<FunctionComponent/>);
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+	<FunctionComponent />
+);
 
 // div.root 对应的是根fiber， Fiber， tag = HostRoot = 3
 

@@ -77,8 +77,8 @@ function prepareFreshStack(root: FiberRoot): Fiber {
 	workInProgressRoot = root; // FiberRoot
 
 	const rootWorkInProgress = createWorkInProgress(root.current, null);
-
 	if(workInProgress === null) {
+		
 		workInProgress = rootWorkInProgress; // Fiber
 	}
     
