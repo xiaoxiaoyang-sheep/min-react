@@ -75,13 +75,56 @@ function commitPlacement(finishedWork: Fiber) {
 			// HostRoot
 			parentDom = parentDom.containerInfo;
 		}
-		parentDom.appendChild(domNode);
+
+
+		// 遍历fiber，寻找finishedWork的兄弟节点，并且这个siblings是有dom节点，且是更新的节点。并且在本轮不发生移动
+		const before = getHostSibling(finishedWork);
+		insertOrAppendPlacementNode(finishedWork, before, parentDom);
 	} else {
 		// Fragment
 		let kid = finishedWork.child;
 		while (kid !== null) {
 			commitPlacement(kid);
 			kid = kid.sibling;
+		}
+	}
+}
+
+function insertOrAppendPlacementNode(node: Fiber, before: Element, parent: Element) {
+	if(before) {
+		parent.insertBefore(getStateNode(node), before);
+	} else {
+		parent.appendChild(getStateNode(node));
+	}
+}
+
+function getHostSibling(fiber: Fiber) {
+	let node = fiber;
+	sibing: while(1) {
+		while(node.sibling === null) {
+			if(node.return === null || isHostParent(node.return)) {
+				return null;
+			}
+			node = node.return;
+		}
+
+		node = node.sibling;
+		while(!isHost(node)) {
+			// 新增插入 | 移动位置
+			if(node.flags & Placement) {
+				continue sibing;
+			}
+
+			if(node.child === null) {
+				continue sibing;
+			} else {
+				node = node.child;
+			}
+		}
+
+		// HostComponent | HostText
+		if(!(node.flags & Placement)) {
+			return node.stateNode;
 		}
 	}
 }

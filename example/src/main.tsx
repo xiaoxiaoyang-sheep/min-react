@@ -32,26 +32,22 @@ class ClassComponent extends Component {
 
 function FunctionComponent({ name }: { name: string }) {
 	const [count1, setCount1] = useReducer((x: any) => x + 1, 0);
+	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3];
+	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 4];
+		const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [3, 2, 0, 4, 1];
 	return (
 		<div className="border">
-			{/* <h3>{name}</h3> */}
-			{count1 % 2 === 0 ? (
-				<button
-					onClick={() => {
-						setCount1();
-					}}
-				>
-					{count1}
-				</button>
-			) : (
-				<span
-					onClick={() => {
-						setCount1();
-					}}
-				>
-					react
-				</span>
-			)}
+			<h3>{name}</h3>
+			<button
+				onClick={() => {
+					setCount1();
+				}}
+			>
+				{count1}
+			</button>
+			<ul>
+				{arr.map((item) => <li key={"li" + item}>{item}</li>)}
+			</ul>
 		</div>
 	);
 }
@@ -74,7 +70,7 @@ const jsx = (
 // ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render("omg");
 // @ts-ignore
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-	<FunctionComponent />
+	(<FunctionComponent name="函数组件" />) as any
 );
 
 // div.root 对应的是根fiber， Fiber， tag = HostRoot = 3
