@@ -20,11 +20,17 @@ let workInProgress: Fiber | null = null;
 // 当前正在工作的fiberRoot
 let workInProgressRoot: FiberRoot | null = null;
 
-export function scheduleUpdateOnFiber(root: FiberRoot, fiber: Fiber) {
+export function scheduleUpdateOnFiber(root: FiberRoot, fiber: Fiber, isSync?: boolean) {
 	workInProgress = fiber;
 	workInProgressRoot = root;
 
-	ensureRootIsScheduled(root);
+	if(isSync) {
+		queueMicrotask(() => performConcurrentWorkOnRoot(root))
+	} else {
+		ensureRootIsScheduled(root);
+	}
+
+	
 }
 
 // 这是每个并发任务的入口点，即通过Scheduler的所有内容。

@@ -1,4 +1,4 @@
-import { Component, ReactDOM, useReducer } from "../which-react";
+import { Component, ReactDOM, useReducer, useState } from "../which-react";
 import "./index.css";
 
 let fragment1 = (
@@ -32,6 +32,7 @@ class ClassComponent extends Component {
 
 function FunctionComponent({ name }: { name: string }) {
 	const [count1, setCount1] = useReducer((x: any) => x + 1, 0);
+	const [count2, setCount2] = useState(0);
 	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3];
 	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 4];
 		const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [3, 2, 0, 4, 1];
@@ -48,6 +49,17 @@ function FunctionComponent({ name }: { name: string }) {
 			<ul>
 				{arr.map((item) => <li key={"li" + item}>{item}</li>)}
 			</ul>
+			<button
+				onClick={() => {
+					setCount2(count2 + 1);
+				}}
+			>
+				{count2}
+			</button>
+
+			{count1 % 2 === 0 ? <h1>null</h1> : null}
+			{count1 % 2 === 0 ? <h1>undefined</h1> : undefined}
+			{count1 % 2 === 0 && <h1>boolean</h1>}
 		</div>
 	);
 }
