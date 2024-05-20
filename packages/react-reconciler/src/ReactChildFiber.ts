@@ -197,6 +197,8 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 				return null;
 			}
 		}
+
+		return null;
 	}
 
 	function updateFromMap(
@@ -208,13 +210,15 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 		if (isText(newChild)) {
 			const matchedFiber = existingChildren.get(newIdx) || null;
 			return updateTextNode(returnFiber, matchedFiber, newChild + "");
-		} else {
+		} else if(typeof newChild === "object" && newChild !== null) {
 			const matchedFiber =
 				existingChildren.get(
 					newChild.key === null ? newIdx : newChild.key
 				) || null;
 			return updateElement(returnFiber, matchedFiber, newChild);
 		}
+
+		return null;
 	}
 
 	function placeChild(
