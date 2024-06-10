@@ -162,6 +162,33 @@ export function useMemo<T>(
 	return nextValue;
 }
 
+export function useCallback<T>(
+	callback: T,
+	deps: Array<any> | void | null
+): T {
+	const hook = updateWorkInProgressHook();
+
+	const nextDeps = deps === undefined ? null : deps;
+
+	const prevState = hook.memoizedState
+
+	// 检查依赖是否发生变化
+	if(prevState !== null) {
+		if(nextDeps !== null) {
+			const prevDeps = prevState[1]
+	
+			if(areHookInputsEqual(nextDeps, prevDeps)) {
+				// 依赖项没有发生变化，返回缓存的callback
+				return prevState[0]
+			}
+		}
+	}
+
+	hook.memoizedState = [callback, nextDeps];
+
+	return callback;
+}
+
 // 检查hook依赖项是否发生改变
 export function areHookInputsEqual(
 	nextDeps: Array<any>,

@@ -2,7 +2,7 @@
  * @Author: Yanko 904852749@qq.com
  * @Date: 2024-05-13 18:25:36
  * @LastEditors: Yanko 904852749@qq.com
- * @LastEditTime: 2024-06-10 21:39:09
+ * @LastEditTime: 2024-06-10 22:00:15
  * @FilePath: /min-react/packages/react/index.ts
  * @Description: 
  * 
@@ -10,4 +10,4 @@
  */
 export { REACT_FRAGMENT_TYPE as Fragment } from "shared/ReactSymbols";
 export { Component } from "./src/ReactBaseClassed";
-export { useReducer, useState, useMemo } from "react-reconciler/src/ReactFiberHooks";
+export { useReducer, useState, useMemo, useCallback } from "react-reconciler/src/ReactFiberHooks";

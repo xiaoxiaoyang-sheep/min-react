@@ -2,13 +2,13 @@
  * @Author: Yanko 904852749@qq.com
  * @Date: 2024-05-09 10:26:49
  * @LastEditors: Yanko 904852749@qq.com
- * @LastEditTime: 2024-06-10 21:50:53
+ * @LastEditTime: 2024-06-10 22:01:26
  * @FilePath: /min-react/example/src/main.tsx
  * @Description: 
  * 
  * Copyright (c) 2024 by Yanko, All Rights Reserved. 
  */
-import { Component, ReactDOM, useMemo, useReducer, useState } from "../which-react";
+import { Component, ReactDOM, useCallback, useMemo, useReducer, useState } from "../which-react";
 import "./index.css";
 
 let fragment1 = (
@@ -47,15 +47,19 @@ function FunctionComponent({ name }: { name: string }) {
 	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 4];
 		const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [3, 2, 0, 4, 1];
 
-
-	const expansize = useMemo(() => {
-		console.log("compute");
+	const addCount = useCallback(() => {
 		let sum = 0;
 		for(let i=0; i< count1 * 100; i++) {
 			sum += i
 		}
 		return sum
 	}, [count1])
+
+
+	const expansize = useMemo(() => {
+		console.log("compute");
+		return addCount()
+	}, [addCount])
 	return (
 		<div className="border">
 			<h3>{name}</h3>
