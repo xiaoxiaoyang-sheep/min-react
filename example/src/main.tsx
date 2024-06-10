@@ -2,13 +2,13 @@
  * @Author: Yanko 904852749@qq.com
  * @Date: 2024-05-09 10:26:49
  * @LastEditors: Yanko 904852749@qq.com
- * @LastEditTime: 2024-06-10 22:01:26
+ * @LastEditTime: 2024-06-10 22:23:21
  * @FilePath: /min-react/example/src/main.tsx
  * @Description: 
  * 
  * Copyright (c) 2024 by Yanko, All Rights Reserved. 
  */
-import { Component, ReactDOM, useCallback, useMemo, useReducer, useState } from "../which-react";
+import { Component, ReactDOM, useCallback, useMemo, useReducer, useRef, useState } from "../which-react";
 import "./index.css";
 
 let fragment1 = (
@@ -55,6 +55,13 @@ function FunctionComponent({ name }: { name: string }) {
 		return sum
 	}, [count1])
 
+	const ref = useRef(0)
+
+	const handleClick = () => {
+		ref.current += 1
+		alert(" You clicked " + ref.current + " times"); 
+	}
+
 
 	const expansize = useMemo(() => {
 		console.log("compute");
@@ -81,7 +88,7 @@ function FunctionComponent({ name }: { name: string }) {
 			>
 				{count2}
 			</button>
-
+				<button onClick={handleClick}>click</button>
 		</div>
 	);
 }

@@ -140,20 +140,19 @@ export function useMemo<T>(
 
 	const nextDeps = deps === undefined ? null : deps;
 
-	const prevState = hook.memoizedState
+	const prevState = hook.memoizedState;
 
 	// 检查依赖是否发生变化
-	if(prevState !== null) {
-		if(nextDeps !== null) {
-			const prevDeps = prevState[1]
-	
-			if(areHookInputsEqual(nextDeps, prevDeps)) {
+	if (prevState !== null) {
+		if (nextDeps !== null) {
+			const prevDeps = prevState[1];
+
+			if (areHookInputsEqual(nextDeps, prevDeps)) {
 				// 依赖项没有发生变化，返回上一次计算的结果，就是缓存的值
-				return prevState[0]
+				return prevState[0];
 			}
 		}
 	}
-	
 
 	const nextValue = nextCreate();
 
@@ -162,24 +161,21 @@ export function useMemo<T>(
 	return nextValue;
 }
 
-export function useCallback<T>(
-	callback: T,
-	deps: Array<any> | void | null
-): T {
+export function useCallback<T>(callback: T, deps: Array<any> | void | null): T {
 	const hook = updateWorkInProgressHook();
 
 	const nextDeps = deps === undefined ? null : deps;
 
-	const prevState = hook.memoizedState
+	const prevState = hook.memoizedState;
 
 	// 检查依赖是否发生变化
-	if(prevState !== null) {
-		if(nextDeps !== null) {
-			const prevDeps = prevState[1]
-	
-			if(areHookInputsEqual(nextDeps, prevDeps)) {
+	if (prevState !== null) {
+		if (nextDeps !== null) {
+			const prevDeps = prevState[1];
+
+			if (areHookInputsEqual(nextDeps, prevDeps)) {
 				// 依赖项没有发生变化，返回缓存的callback
-				return prevState[0]
+				return prevState[0];
 			}
 		}
 	}
@@ -187,6 +183,14 @@ export function useCallback<T>(
 	hook.memoizedState = [callback, nextDeps];
 
 	return callback;
+}
+
+export function useRef<T>(initialValue: T): { current: T } {
+	const hook = updateWorkInProgressHook();
+	if (currentHook === null) {
+		hook.memoizedState = { current: initialValue };
+	}
+	return hook.memoizedState;
 }
 
 // 检查hook依赖项是否发生改变
