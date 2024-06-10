@@ -14,7 +14,6 @@ let currentlyRenderingFiber: Fiber | null = null;
 let workInProgressHook: Hook | null = null;
 let currentHook: Hook | null = null;
 
-
 export function renderWithHooks<Props>(
 	current: null | Fiber,
 	workInProgress: Fiber,
@@ -42,31 +41,29 @@ function updateWorkInProgressHook(): Hook {
 	const current = currentlyRenderingFiber?.alternate;
 	if (current) {
 		// update阶段
-        currentlyRenderingFiber!.memoizedState = current.memoizedState;
-        if(workInProgressHook) {
-            hook = workInProgressHook = workInProgressHook.next!;
-            currentHook = currentHook?.next as Hook;
-
-        } else {
-            // hook单链表的头节点
-            hook = workInProgressHook = currentlyRenderingFiber?.memoizedState;
-            currentHook = current.memoizedState;
-        }
+		currentlyRenderingFiber!.memoizedState = current.memoizedState;
+		if (workInProgressHook) {
+			hook = workInProgressHook = workInProgressHook.next!;
+			currentHook = currentHook?.next as Hook;
+		} else {
+			// hook单链表的头节点
+			hook = workInProgressHook = currentlyRenderingFiber?.memoizedState;
+			currentHook = current.memoizedState;
+		}
 	} else {
 		// mount阶段
-        currentHook = null;
-        hook = {
-            memoizedState: null,
-            next: null,
-        }
-        if(workInProgressHook) {
-            workInProgressHook = workInProgressHook.next = hook;
-        } else {
-            // hook单链表的头节点
-            workInProgressHook = currentlyRenderingFiber!.memoizedState = hook;
-        }
+		currentHook = null;
+		hook = {
+			memoizedState: null,
+			next: null,
+		};
+		if (workInProgressHook) {
+			workInProgressHook = workInProgressHook.next = hook;
+		} else {
+			// hook单链表的头节点
+			workInProgressHook = currentlyRenderingFiber!.memoizedState = hook;
+		}
 	}
-
 
 	return hook;
 }
@@ -87,40 +84,98 @@ export function useReducer<S, I, A>(
 	}
 
 	// ! 2. 区分函数组件是初次挂载还是更新
-    if(!currentlyRenderingFiber?.alternate) {
-        // mount
-        hook.memoizedState = initialState;
-    } 	
+	if (!currentlyRenderingFiber?.alternate) {
+		// mount
+		hook.memoizedState = initialState;
+	}
 
 	// ! 3. dispatch
-	const dispatch = dispatchReducerAction.bind(null, currentlyRenderingFiber as Fiber, hook, reducer as any )
+	const dispatch = dispatchReducerAction.bind(
+		null,
+		currentlyRenderingFiber as Fiber,
+		hook,
+		reducer as any
+	);
 	return [hook.memoizedState, dispatch];
 }
 
-function dispatchReducerAction<S, I, A>(fiber: Fiber, hook: Hook, reducer: (state: S, action: A) => S, action: A) {
+function dispatchReducerAction<S, I, A>(
+	fiber: Fiber,
+	hook: Hook,
+	reducer: (state: S, action: A) => S,
+	action: A
+) {
 	hook.memoizedState = reducer ? reducer(hook.memoizedState, action) : action;
-    fiber.alternate = {...fiber};
-    const root = getRootForUpdateFiber(fiber);
-    // 调度更新
-    scheduleUpdateOnFiber(root, fiber, true);
+	fiber.alternate = { ...fiber };
+	const root = getRootForUpdateFiber(fiber);
+	// 调度更新
+	scheduleUpdateOnFiber(root, fiber, true);
 }
 
 function getRootForUpdateFiber(sourceFiber: Fiber): FiberRoot {
-    let node = sourceFiber;
-    let parent = node.return;
+	let node = sourceFiber;
+	let parent = node.return;
 
-    while(parent !== null) {
-        node = parent;
-        parent = node.return;
-    }
+	while (parent !== null) {
+		node = parent;
+		parent = node.return;
+	}
 
-    return node.tag === HostRoot ? node.stateNode : null;
+	return node.tag === HostRoot ? node.stateNode : null;
 }
 
 // 源码中useReducer和useState对比
 // useState,如果state没有改变，不引起组件更新。useReducer，每次都会引起组件更新
 // useReducer,代表state修改规则，useReducer比较方便复用这个规则
-export function useState<S>(initialState: (() => S) | S ) {
+export function useState<S>(initialState: (() => S) | S) {
 	const init = isFn(initialState) ? (initialState as any)() : initialState;
-	return useReducer(null, init)
+	return useReducer(null, init);
+}
+
+export function useMemo<T>(
+	nextCreate: () => T,
+	deps: Array<any> | void | null
+): T {
+	const hook = updateWorkInProgressHook();
+
+	const nextDeps = deps === undefined ? null : deps;
+
+	const prevState = hook.memoizedState
+
+	// 检查依赖是否发生变化
+	if(prevState !== null) {
+		if(nextDeps !== null) {
+			const prevDeps = prevState[1]
+	
+			if(areHookInputsEqual(nextDeps, prevDeps)) {
+				// 依赖项没有发生变化，返回上一次计算的结果，就是缓存的值
+				return prevState[0]
+			}
+		}
+	}
+	
+
+	const nextValue = nextCreate();
+
+	hook.memoizedState = [nextValue, nextDeps];
+
+	return nextValue;
+}
+
+// 检查hook依赖项是否发生改变
+export function areHookInputsEqual(
+	nextDeps: Array<any>,
+	prevDeps: Array<any> | null
+) {
+	if (prevDeps === null) {
+		return false;
+	}
+
+	for (let i = 0; i < prevDeps.length && i < nextDeps.length; i++) {
+		if (Object.is(prevDeps[i], nextDeps[i])) {
+			continue;
+		}
+		return false;
+	}
+	return true;
 }
