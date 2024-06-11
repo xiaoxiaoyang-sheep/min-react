@@ -2,13 +2,23 @@
  * @Author: Yanko 904852749@qq.com
  * @Date: 2024-05-09 10:26:49
  * @LastEditors: Yanko 904852749@qq.com
- * @LastEditTime: 2024-06-10 22:23:21
+ * @LastEditTime: 2024-06-11 18:53:39
  * @FilePath: /min-react/example/src/main.tsx
- * @Description: 
- * 
- * Copyright (c) 2024 by Yanko, All Rights Reserved. 
+ * @Description:
+ *
+ * Copyright (c) 2024 by Yanko, All Rights Reserved.
  */
-import { Component, ReactDOM, useCallback, useMemo, useReducer, useRef, useState } from "../which-react";
+import {
+	Component,
+	ReactDOM,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useReducer,
+	useRef,
+	useState,
+} from "../which-react";
 import "./index.css";
 
 let fragment1 = (
@@ -45,32 +55,35 @@ function FunctionComponent({ name }: { name: string }) {
 	const [count2, setCount2] = useState(0);
 	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3];
 	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 4];
-		const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [3, 2, 0, 4, 1];
+	const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [3, 2, 0, 4, 1];
 
 	const addCount = useCallback(() => {
 		let sum = 0;
-		for(let i=0; i< count1 * 100; i++) {
-			sum += i
+		for (let i = 0; i < count1 * 100; i++) {
+			sum += i;
 		}
-		return sum
-	}, [count1])
+		return sum;
+	}, [count1]);
 
-	const ref = useRef(0)
+	const ref = useRef(0);
 
 	const handleClick = () => {
-		ref.current += 1
-		alert(" You clicked " + ref.current + " times"); 
-	}
+		ref.current += 1;
+		alert(" You clicked " + ref.current + " times");
+	};
 
+	useLayoutEffect(() => {
+		console.log("useLayoutEffect");
+	}, [count1]);
 
-	const expansize = useMemo(() => {
-		console.log("compute");
-		return addCount()
-	}, [addCount])
+	useEffect(() => {
+		console.log("useEffect");
+	}, [count2]);
+
 	return (
 		<div className="border">
 			<h3>{name}</h3>
-			<h2>{expansize}</h2>
+
 			<button
 				onClick={() => {
 					setCount1();
@@ -88,7 +101,6 @@ function FunctionComponent({ name }: { name: string }) {
 			>
 				{count2}
 			</button>
-				<button onClick={handleClick}>click</button>
 		</div>
 	);
 }

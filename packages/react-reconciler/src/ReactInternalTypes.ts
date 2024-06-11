@@ -1,3 +1,13 @@
+/*
+ * @Author: Yanko 904852749@qq.com
+ * @Date: 2024-05-09 11:10:09
+ * @LastEditors: Yanko 904852749@qq.com
+ * @LastEditTime: 2024-06-11 19:14:19
+ * @FilePath: /min-react/packages/react-reconciler/src/ReactInternalTypes.ts
+ * @Description: 
+ * 
+ * Copyright (c) 2024 by Yanko, All Rights Reserved. 
+ */
 import type { Flags } from "./ReactFiberFlags";
 import { WorkTag } from "./ReactWorkTags";
 
@@ -60,4 +70,7 @@ export type Fiber = {
 
 	// 记录要删除的子节点
 	deletions: Array<Fiber> | null;
+
+	 // 记录effect
+	 updateQueue: any;
 };
