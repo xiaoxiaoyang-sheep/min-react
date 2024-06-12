@@ -1,9 +1,9 @@
 import type { ReactElement } from "shared/ReactElementType";
 import { NoFlags } from "./ReactFiberFlags";
 import type { Fiber } from "./ReactInternalTypes";
-import { ClassComponent, Fragment, FunctionComponent, HostComponent, HostText, IndeterminateComponent, WorkTag } from "./ReactWorkTags";
+import { ClassComponent, ContextConsumer, ContextProvider, Fragment, FunctionComponent, HostComponent, HostText, IndeterminateComponent, WorkTag } from "./ReactWorkTags";
 import { isFn, isStr } from "shared/utils";
-import { REACT_FRAGMENT_TYPE} from "shared/ReactSymbols"
+import { REACT_CONTEXT_TYPE, REACT_FRAGMENT_TYPE, REACT_PROVIDER_TYPE} from "shared/ReactSymbols"
 
 
 
@@ -66,11 +66,11 @@ export function createFiberFromTypeAndProps(
 		fiberTag = HostComponent;
 	} else if (type === REACT_FRAGMENT_TYPE) {
 		fiberTag =Fragment;
-	} else if (isFn(type)) {
-		fiberTag = FunctionComponent;
-	} else {
-		fiberTag = ClassComponent;
-	}
+	} else if (type.$$typeof === REACT_PROVIDER_TYPE) {
+		fiberTag = ContextProvider;
+	} else if (type.$$typeof === REACT_CONTEXT_TYPE) {
+		fiberTag = ContextConsumer;
+	} 
 
 
 	const fiber = createFiber(fiberTag, pendingProps, key);

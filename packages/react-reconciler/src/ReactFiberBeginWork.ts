@@ -1,3 +1,11 @@
+/*
+ * @Author: xiaoxiaoyang-sheep 904852749@qq.com
+ * @Date: 2024-05-09 16:59:50
+ * @LastEditors: xiaoxiaoyang-sheep 904852749@qq.com
+ * @LastEditTime: 2024-06-12 20:56:59
+ * @FilePath: /min-react/packages/react-reconciler/src/ReactFiberBeginWork.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { isNum, isStr } from "shared/utils";
 import type { Fiber } from "./ReactInternalTypes";
 import {
@@ -7,9 +15,12 @@ import {
 	HostText,
 	ClassComponent,
 	FunctionComponent,
+	ContextProvider,
+	ContextConsumer,
 } from "./ReactWorkTags";
 import { reconcileChildFibers, mountChildFibers } from "./ReactChildFiber";
 import { renderWithHooks } from "./ReactFiberHooks";
+import { pushProvider, readContext } from "./ReactFiberNewContext";
 
 // 1. 处理当前fiber，因为不同组件对应的fiber处理方式不同
 // 2. 返回子节点child
@@ -27,6 +38,11 @@ function beginWork(current: Fiber | null, workInProgress: Fiber): Fiber | null {
 			return updateClassComponent(current, workInProgress);
 		case FunctionComponent:
 			return updateFunctionComponent(current, workInProgress);
+		case ContextProvider:
+			return updateContextProvider(current, workInProgress);
+		case ContextConsumer:
+			return updateContextConsumer(current, workInProgress);
+
 		// todo
 	}
 
@@ -42,7 +58,7 @@ function updateHostRoot(current: null | Fiber, workInProgress: Fiber) {
 
 	reconcileChildren(current, workInProgress, nextChildren);
 
-	if(current) {
+	if (current) {
 		current.child = workInProgress.child;
 	}
 
@@ -81,7 +97,14 @@ function updateFragment(current: null | Fiber, workInProgress: Fiber) {
 // 协调
 function updateClassComponent(current: null | Fiber, workInProgress: Fiber) {
 	const { type, pendingProps } = workInProgress;
-	const instance = new type(pendingProps);
+	const context = type.contextType
+	const newValue = readContext(context)
+	let instance = workInProgress.stateNode
+	if(current === null) {
+		instance = new type(pendingProps)
+		workInProgress.stateNode = instance
+	}
+	instance.context = newValue
 	const children = instance.render();
 	reconcileChildren(current, workInProgress, children);
 	return workInProgress.child;
@@ -89,9 +112,40 @@ function updateClassComponent(current: null | Fiber, workInProgress: Fiber) {
 
 function updateFunctionComponent(current: null | Fiber, workInProgress: Fiber) {
 	const { type, pendingProps } = workInProgress;
-	const children = renderWithHooks(current, workInProgress, type, pendingProps);
+	const children = renderWithHooks(
+		current,
+		workInProgress,
+		type,
+		pendingProps
+	);
 	reconcileChildren(current, workInProgress, children);
 	return workInProgress.child;
+}
+
+function updateContextProvider(current: null | Fiber, workInProgress: Fiber) {
+	const context = workInProgress.type._context;
+	const value = workInProgress.pendingProps.value;
+
+	// 1. 记录下context value到stack， 2. 可以让后代组件消费 3. 消费完出栈
+	// 数据结构存储 stack 先进后出
+	pushProvider(context, value);
+
+	reconcileChildren(
+		current,
+		workInProgress,
+		workInProgress.pendingProps.children
+	);
+	return workInProgress.child;
+}
+
+function updateContextConsumer(current: null | Fiber, workInProgress: Fiber) {
+	const context = workInProgress.type
+	const newValue = readContext(context)
+
+	const render = workInProgress.pendingProps.children
+	const newChildren = render(newValue)
+	reconcileChildren(current, workInProgress, newChildren)
+	return workInProgress.child
 }
 
 // 协调子节点，构建新的fiber树

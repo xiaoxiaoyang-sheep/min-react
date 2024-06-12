@@ -1,17 +1,9 @@
-/*
- * @Author: Yanko 904852749@qq.com
- * @Date: 2024-05-09 10:26:49
- * @LastEditors: Yanko 904852749@qq.com
- * @LastEditTime: 2024-06-11 18:53:39
- * @FilePath: /min-react/example/src/main.tsx
- * @Description:
- *
- * Copyright (c) 2024 by Yanko, All Rights Reserved.
- */
 import {
 	Component,
 	ReactDOM,
+	createContext,
 	useCallback,
+	useContext,
 	useEffect,
 	useLayoutEffect,
 	useMemo,
@@ -38,47 +30,14 @@ let fragment1 = (
 // 	</Fragment>
 // )
 
-// @ts-ignore
-class ClassComponent extends Component {
-	render() {
-		return (
-			<div>
-				{/* @ts-ignore */}
-				<h3>{this.props.name}</h3>
-			</div>
-		);
-	}
-}
+
+
+const CountContext = createContext(100);
+const ThemeContext = createContext("red");
 
 function FunctionComponent({ name }: { name: string }) {
 	const [count1, setCount1] = useReducer((x: any) => x + 1, 0);
 	const [count2, setCount2] = useState(0);
-	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3];
-	// const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [0, 1, 2, 4];
-	const arr = count1 % 2 === 0 ? [0, 1, 2, 3, 4] : [3, 2, 0, 4, 1];
-
-	const addCount = useCallback(() => {
-		let sum = 0;
-		for (let i = 0; i < count1 * 100; i++) {
-			sum += i;
-		}
-		return sum;
-	}, [count1]);
-
-	const ref = useRef(0);
-
-	const handleClick = () => {
-		ref.current += 1;
-		alert(" You clicked " + ref.current + " times");
-	};
-
-	useLayoutEffect(() => {
-		console.log("useLayoutEffect");
-	}, [count1]);
-
-	useEffect(() => {
-		console.log("useEffect");
-	}, [count2]);
 
 	return (
 		<div className="border">
@@ -91,9 +50,7 @@ function FunctionComponent({ name }: { name: string }) {
 			>
 				{count1}
 			</button>
-			{/* <ul>
-				{arr.map((item) => <li key={"li" + item}>{item}</li>)}
-			</ul> */}
+
 			<button
 				onClick={() => {
 					setCount2(count2 + 1);
@@ -101,8 +58,52 @@ function FunctionComponent({ name }: { name: string }) {
 			>
 				{count2}
 			</button>
+
+			<ThemeContext.Provider value="green">
+				<CountContext.Provider value={count1}>
+					<CountContext.Provider value={count1 + 1}>
+						<Child></Child>
+					</CountContext.Provider>
+					<Child></Child>
+				</CountContext.Provider>
+			</ThemeContext.Provider>
+			<Child></Child>
 		</div>
 	);
+}
+
+function Child() {
+	const count = useContext(CountContext);
+	const theme = useContext(ThemeContext)
+	return (
+		<div>
+			<h1>Child</h1>
+			<p>第一种消费方式</p>
+			<p>{count}</p>
+
+			<p>第二种消费方式</p>
+			<CountContext.Consumer>
+				{(value) => <p>{value}</p>}
+			</CountContext.Consumer>
+
+			<p>第三种消费方式</p>
+			<ClassComponent></ClassComponent>
+		</div>
+	);
+}
+
+// @ts-ignore
+class ClassComponent extends Component {
+	static contextType = CountContext
+	render() {
+		return (
+			<div>
+				{/* @ts-ignore */}
+				<h3>{this.props.name}</h3>
+				<p>{this.context}</p>
+			</div>
+		);
+	}
 }
 
 const jsx = (

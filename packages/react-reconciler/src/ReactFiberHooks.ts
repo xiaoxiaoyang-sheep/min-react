@@ -4,6 +4,8 @@ import type { Fiber, FiberRoot } from "./ReactInternalTypes";
 import { HostRoot } from "./ReactWorkTags";
 import { type Flags, Update, Passive } from "./ReactFiberFlags";
 import { type HookFlags, HookLayout, HookPassive } from "./ReactHookEffectTags";
+import { readContext } from "./ReactFiberNewContext";
+import { ReactContext } from "shared/ReactTypes";
 
 type Hook = {
 	memoizedState: any;
@@ -249,7 +251,7 @@ function updateEffectImpl(
 	const hook = updateWorkInProgressHook();
 
 	const nextDeps = deps === undefined ? null : deps;
-	
+
 	// 依赖项是否发生变化
 	if (currentHook !== null) {
 		if (nextDeps !== null) {
@@ -294,4 +296,8 @@ function pushEffect(
 	}
 
 	return effect;
+}
+
+export function useContext<T>(context: ReactContext<T>) {
+	return readContext(context);
 }
